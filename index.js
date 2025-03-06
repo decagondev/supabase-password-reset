@@ -1,6 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const bcrypt = require('bcrypt');
-const mailgun = require('mailgun-js');
+const formData = require('form-data');
+const Mailgun = require('mailgun.js');
 
 /**
  * SupabasePasswordReset - A utility for resetting passwords in Supabase
@@ -29,10 +30,14 @@ class SupabasePasswordReset {
 
     this.supabase = createClient(config.supabaseUrl, config.supabaseKey);
     
-    this.mailgun = mailgun({
-      apiKey: config.mailgunApiKey,
-      domain: config.mailgunDomain
+    // Initialize the new Mailgun client
+    const mailgunClient = new Mailgun(formData);
+    this.mailgun = mailgunClient.client({
+      username: 'api',
+      key: config.mailgunApiKey
     });
+    
+    this.mailgunDomain = config.mailgunDomain;
 
     this.options = {
       saltRounds: 10,
@@ -89,7 +94,7 @@ class SupabasePasswordReset {
         text: this.options.emailTemplateFunction(email, newPassword)
       };
 
-      await this.mailgun.messages().send(emailData);
+      await this.mailgun.messages.create(this.mailgunDomain, emailData);
 
       return {
         success: true,

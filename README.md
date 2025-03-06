@@ -8,6 +8,11 @@ A Node.js package for resetting user passwords in Supabase and sending notificat
 npm install supabase-password-reset
 ```
 
+The package requires the following dependencies:
+```bash
+npm install @supabase/supabase-js bcrypt mailgun.js form-data
+```
+
 ## Features
 
 - Reset passwords for Supabase users by email
@@ -421,6 +426,14 @@ const passwordReset = new SupabasePasswordReset({
 - Add appropriate authorization checks to ensure only authorized users can reset passwords.
 - Consider using CAPTCHA or similar verification to prevent automated abuse.
 - It's recommended to set up a secure password change flow after users log in with their temporary password.
+
+## Dependencies
+
+This package depends on:
+- `@supabase/supabase-js`: For interacting with Supabase
+- `bcrypt`: For securely hashing passwords
+- `mailgun.js`: For sending emails via Mailgun
+- `form-data`: Required by the Mailgun.js client
 
 ## API Reference
 
