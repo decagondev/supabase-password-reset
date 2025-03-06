@@ -57,11 +57,8 @@ class SupabasePasswordReset {
    */
   async resetPasswordByEmail(email) {
     try {
-      const { data: user, error: userError } = await this.supabase
-        .from('auth.users')
-        .select('id, email')
-        .eq('email', email)
-        .single();
+      // Use the auth admin API to get the user
+      const { data: user, error: userError } = await this.supabase.auth.admin.getUserByEmail(email);
 
       if (userError || !user) {
         return {
@@ -72,12 +69,11 @@ class SupabasePasswordReset {
 
       const newPassword = this._generateRandomPassword();
 
-      const hashedPassword = await bcrypt.hash(newPassword, this.options.saltRounds);
-
-      const { error: updateError } = await this.supabase
-        .from('auth.users')
-        .update({ encrypted_password: hashedPassword })
-        .eq('id', user.id);
+      // Use the auth admin API to update the user's password
+      const { error: updateError } = await this.supabase.auth.admin.updateUserById(
+        user.id,
+        { password: newPassword }
+      );
       
       if (updateError) {
         console.error('Error updating password:', updateError);
